@@ -1,4 +1,4 @@
-from utils import *
+from .utils import *
 
 class Card(tuple):
 
@@ -47,5 +47,5 @@ if __name__=='__main__':
     a = Card('A', 'hearts')
     print a
 
-    b = Cards(('A','hearts'),(10,'hearts'),('W','red_joker'))
+    b = Cards(('A','hearts'),(10,'hearts'),('W','red_joker'), a)
     print b
