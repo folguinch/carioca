@@ -1,6 +1,6 @@
-from utils import *
+from .utils import *
 
-class Card:
+class Card(tuple):
 
     def __init__(self, value, suit):
         """
@@ -17,8 +17,7 @@ class Card:
         validate_card(value, suit)
 
         # Define card
-        self.value = value
-        self.suit = suit
+        super(Card, self).__init__((value, suit))
 
     def __str__(self):
         if self.value != 'W':
@@ -26,6 +25,14 @@ class Card:
                     'replace')
         else:
             return SUITS_UNICODE[self.suit].encode('utf-8','replace')
+
+    @property
+    def value(self):
+        return self[0]
+
+    @property
+    def suit(self):
+        return self[1]
 
 class Cards(list):
 
