@@ -14,6 +14,7 @@ class Card:
                 'black_joker', 'red_joker')
         """
         # Check card
+        validate_card(value, suit)
 
         # Define card
         self.value = value
