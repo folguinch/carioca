@@ -1,8 +1,8 @@
-from .utils import *
+from utils import *
 
 class Card(tuple):
 
-    def __init__(self, value, suit):
+    def __new__(cls, value, suit):
         """
         Create a card.
         Input:
@@ -17,7 +17,8 @@ class Card(tuple):
         validate_card(value, suit)
 
         # Define card
-        super(Card, self).__init__((value, suit))
+        #super(Card, self).__init__((value, suit))
+        return tuple.__new__(cls, (value, suit))
 
     def __str__(self):
         if self.value != 'W':
