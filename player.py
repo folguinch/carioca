@@ -32,3 +32,19 @@ class Players(list):
     def get_deck(self, game):
         self.deck = Deck(game=game)
         self.discard = Discard()
+
+    def draw(self):
+        """
+        Draw 12 cards to each player and leave one in the discard.
+        """
+        nplayers = self.__length__
+        print 'Drawing cards'
+        for i in range(nplayers*12):
+            card = self.deck.pop()
+            self.players[i % nplayers].hand.append(card)
+
+        # Leave one card in the discard
+        self.discard.append(self.deck.pop())
+
+
+
