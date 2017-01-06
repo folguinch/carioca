@@ -13,11 +13,13 @@ def validate_card(value, suit):
     if value=='W' and suit not in ['red_joker','black_joker']:
         raise ValueError('Card value does not match a valid suit')
 
-def get_deck(ndecks=1):
+def get_deck(ndecks=1, include_joker=True):
     suits = ['spades','hearts','diamonds','stars']
     values = range(2,11)+['A','J','Q','K']
     deck = list(repeat(list(product(values, suits)),ndecks))
     deck = list(chain(*deck))
-    deck += [('W','red_joker'), ('W','black_joker')]*ndecks
+
+    if include_joker:
+        deck += [('W','red_joker'), ('W','black_joker')]*ndecks
 
     return deck
