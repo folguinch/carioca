@@ -5,8 +5,9 @@ from .utils import get_players
 
 class Player:
 
-    def __init__(self, name):
+    def __init__(self, name, ip):
         self.name = name
+        self.ip = ip
         self.hand = None
         self.down = None
 
