@@ -15,6 +15,7 @@ class Players(list):
 
     def __init__(self, players):
         players = get_players(players)
+        self.deck = None
 
     def get_players(self, filename):
         """
@@ -26,3 +27,6 @@ class Players(list):
         for name in config.sections():
             print '\t%s' % name
             self.append(Player(name, config.get(name,'ip')))
+
+    def get_deck(self, game):
+        self.deck = Deck(game=game)
