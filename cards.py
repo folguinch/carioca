@@ -4,8 +4,12 @@ from .base import Cards
 
 class Deck(Cards):
 
-    def __init__(self, ndecks=2):
-        cards = get_deck(ndecks)
+    def __init__(self, ndecks=2, game=''):
+        if game != 'RS':
+            cards = get_deck(ndecks)
+        else:
+            # Do not include the joker in real straight
+            cards = get_deck(ndecks, False)
         super(Deck, self).__init__(*cards)
 
     def shuffle(self):
