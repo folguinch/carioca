@@ -1,4 +1,7 @@
-from .cards import Hand, Down
+from ConfigParser import ConfigParser
+
+from .cards import *
+from .utils import get_players
 
 class Player:
 
@@ -6,3 +9,19 @@ class Player:
         self.name = name
         self.hand = None
         self.down = None
+
+class Players(list):
+
+    def __init__(self, players):
+        players = get_players(players)
+
+    def get_players(self, filename):
+        """
+        Initialize players from a configuration file.
+        """
+        config = ConfigParser()
+        read = config.read(filename)
+        print 'Players:'
+        for name in config.sections():
+            print '\t%s' % name
+            self.append(Player(name, config.get(name,'ip')))
