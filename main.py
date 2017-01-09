@@ -1,5 +1,5 @@
 from .utils import greeting, ROUNDS
-from .player import client
+from .player import Client
 from .dealer import Dealer
 
 def main_server():
@@ -35,8 +35,13 @@ def main():
     nplayers = raw_input('Number of players:')
 
     # Connect to server
-    player = client()
+    player = Client()
 
     # Connect the socket to the port where the server is listening
     player.connect('ganymede', 10000)
     player.send('%s,%s' % (nplayers, player_name))
+
+    while True:
+        msg = player.receive()
+        if len(msg)>0:
+            print msg

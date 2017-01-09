@@ -1,3 +1,4 @@
+import socket
 from itertools import product, repeat, chain
 
 SUITS_UNICODE = {'spades':u'[%s\u2660]', 'hearts':u'[%s\u2665]',
@@ -33,3 +34,21 @@ def greeting():
     print '#'*80
     print '{:^80}'.format('CARIOCA')
     print '#'*80
+
+def init_server(server_name='ganymede', port=10000):
+    """
+    From https://pymotw.com/2/socket/tcp.html
+    """
+    # Create a TCP/IP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Bind the socket to the port
+    server_address = (server_name, port)
+    print 'Starting up on %s port %s' % server_address
+    sock.bind(server_address)
+
+    # Listen for incoming connections
+    sock.listen(5)
+
+    return sock
+

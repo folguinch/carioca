@@ -1,5 +1,6 @@
 from ConfigParser import ConfigParser
 
+from .player import Player
 from .cards import *
 from .utils import init_server
 
@@ -25,7 +26,7 @@ class Dealer(list):
             print '\t%s' % name
             self.append(Player(name, config.get(name,'ip')))
 
-    def connect_players(self):
+    def connect_players(self, msg_length=2048):
 
         # Get player names and addresses
         # Each player must enter the total number of players but the last one
@@ -39,10 +40,9 @@ class Dealer(list):
             try:
                 print 'Connection from', client_address
                 while True:
-                    msg = connection.recv(16)
-                    if msg:
-                        data += msg
-                    else:
+                    msg = connection.recv(msg_length)
+                    data += msg
+                    if len(msg)<msg_length:
                         break
             except:
                 continue
@@ -51,10 +51,15 @@ class Dealer(list):
             nplayers = int(nplayers)
             if len(self)== 0:
                 print 'Number of players:', nplayers
+            self.sendall('%s has connected' % name)
             self.append(Player(name, connection))
 
             if len(self)==nplayers:
                 break
+
+    def sendall(self, msg):
+        for player in self:
+            player.socket.sendall(msg)
 
     def get_deck(self, game):
         self.deck = Deck(game=game)

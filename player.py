@@ -21,5 +21,14 @@ class Client:
         self.sock.connect((host, port))
 
     def send(self, msg):
-        self.sendall(msg)
+        self.sock.sendall(msg)
+
+    def receive(self, msg_length=2048):
+        data = ''
+        while True:
+            msg = self.sock.recv(msg_length)
+            data += msg
+            if len(msg)<msg.length:
+                break
+        return data
 
