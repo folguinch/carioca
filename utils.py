@@ -20,7 +20,7 @@ def validate_card(value, suit):
         raise ValueError('Card value does not match a valid suit')
 
 def get_deck(ndecks=1, include_joker=True):
-    suits = ['spades','hearts','diamonds','stars']
+    suits = ['spades','hearts','diamonds','clubs']
     values = range(2,11)+['A','J','Q','K']
     deck = list(repeat(list(product(values, suits)),ndecks))
     deck = list(chain(*deck))
