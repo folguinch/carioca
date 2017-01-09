@@ -25,7 +25,7 @@ class Client:
     def __init__(self, name):
         # Create a TCP/IP socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        super(Player, self).__init__(name)
+        super(Client, self).__init__(name)
 
     def connect(self, host, port):
         print 'Connecting to %s port %s' % (host, port) 
