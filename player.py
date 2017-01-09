@@ -20,7 +20,7 @@ class Player(BasePlayer):
         super(Player, self).__init__(name)
 
 
-class Client:
+class Client(BasePlayer):
 
     def __init__(self, name):
         # Create a TCP/IP socket
