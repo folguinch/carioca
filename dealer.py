@@ -83,6 +83,8 @@ class Dealer(list):
         for player in self:
             dump = json.dumps(player.hand)
             player.socket.sendall('HAND,'+dump)
+            dump = json.dumps(self.discard[-1])
+            player.socket.sendall('DISCARD,'+dump)
 
 
 

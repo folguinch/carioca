@@ -1,6 +1,7 @@
 import socket, json
 
 from .cards import Hand, Down
+from .base import Card
 
 __metaclass__ = type
 
@@ -51,4 +52,9 @@ class Client(BasePlayer):
             self.hand = Hand(*hand)
             print 'Your hand:'
             print self.hand
+        elif msg.startswith('DISCARD'):
+            discard = json.loads(','.join(msg.split(',')[1:]))
+            discard = Card(*discard)
+            print 'Discard:'
+            print discard
 
