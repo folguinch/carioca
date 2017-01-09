@@ -1,6 +1,6 @@
 from .utils import greeting, ROUNDS
 
-def main(args):
+def main_server(args):
 
     # Greeting message
     greeting()
