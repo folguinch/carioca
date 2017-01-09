@@ -35,9 +35,8 @@ def main():
     nplayers = raw_input('Number of players:')
 
     # Connect to server
-    import socket
+    player = client()
 
     # Connect the socket to the port where the server is listening
-    server_address = ('ganymede', 10000)
-    sock.connect(server_address)
-    sock.sendall('%s,%s' % (nplayers, player_name))
+    player.connect('ganymede', 10000)
+    player.send('%s,%s' % (nplayers, player_name))
