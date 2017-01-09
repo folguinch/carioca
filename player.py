@@ -11,7 +11,7 @@ class Player:
         self.hand = None
         self.down = None
 
-class Players(list):
+class Dealer(list):
 
     def __init__(self, players):
         players = get_players(players)

@@ -7,7 +7,7 @@ def main_server(args):
 
     # Initialise users
     # This should only be done by the server and sent to the clients
-    players = Players(args.players)
+    players = Dealer(args.players)
     
     for i,(key,val) in enumerate(ROUNDS.items()):
         # Current round
