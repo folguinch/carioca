@@ -1,4 +1,5 @@
 from ConfigParser import ConfigParser
+import json
 
 from .player import Player
 from .cards import *
@@ -69,14 +70,19 @@ class Dealer(list):
         """
         Draw 12 cards to each player and leave one in the discard.
         """
-        nplayers = self.__length__()
+        nplayers = len(self)
         print 'Drawing cards'
         for i in range(nplayers*12):
             card = self.deck.pop()
-            self.players[i % nplayers].hand.append(card)
+            self[i % nplayers].hand.append(card)
 
         # Leave one card in the discard
         self.discard.append(self.deck.pop())
+
+        # Send hand to each player
+        for player in self:
+            dump = json.dumps(player.hand)
+            player.socket.sendall('HAND,'+dump)
 
 
 
