@@ -1,6 +1,7 @@
 import random
 
 from .base import Cards
+from .utils import get_deck
 
 class Deck(Cards):
 
@@ -19,10 +20,11 @@ class Discard(list):
     pass
 
 class Hand(Cards):
+    pass
 
-    def __init__(self, cards, nmax=12):
-        self.nmax = nmax
-        super(Hand, self).__init__(*cards)
+    #def __init__(self, cards, nmax=12):
+    #    self.nmax = nmax
+    #    super(Hand, self).__init__(*cards)
 
 class Down(Cards):
     pass
