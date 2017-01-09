@@ -1,3 +1,5 @@
+import json
+
 from .utils import greeting, ROUNDS
 from .player import Client
 from .dealer import Dealer
@@ -44,4 +46,4 @@ def main():
     while True:
         msg = player.receive()
         if len(msg)>0:
-            print msg
+            player.decode(msg)
