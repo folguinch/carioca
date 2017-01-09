@@ -1,6 +1,8 @@
-import socket
+import socket, json
 
 from .cards import Hand, Down
+
+__metaclass__ = type
 
 class BasePlayer:
 
@@ -42,4 +44,11 @@ class Client(BasePlayer):
             if len(msg)<msg_length:
                 break
         return data
+
+    def decode(self, msg):
+        if msg.startswith('HAND'):
+            hand = json.loads(','.join(msg.split(',')[1:]))
+            self.hand = Hand(*hand)
+            print 'Your hand:'
+            print self.hand
 
