@@ -28,7 +28,7 @@ class Client:
         while True:
             msg = self.sock.recv(msg_length)
             data += msg
-            if len(msg)<msg.length:
+            if len(msg)<msg_length:
                 break
         return data
 
