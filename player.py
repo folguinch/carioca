@@ -1,20 +1,25 @@
 from ConfigParser import ConfigParser
 
 from .cards import *
-from .utils import get_players
+from .utils import init_server
 
 class Player:
 
-    def __init__(self, name, ip):
+    def __init__(self, name, socket):
+        print 'New player:', name 
         self.name = name
-        self.ip = ip
+        self.socket = socket
         self.hand = None
         self.down = None
 
 class Dealer(list):
 
-    def __init__(self, players):
-        players = get_players(players)
+    def __init__(self):
+
+        # Initialise server
+        self.sock = init_server()
+        players = self.connect_players()
+
         self.deck = None
         self.discard = None
 
@@ -29,6 +34,37 @@ class Dealer(list):
             print '\t%s' % name
             self.append(Player(name, config.get(name,'ip')))
 
+    def connect_players(self):
+
+        # Get player names and addresses
+        # Each player must enter the total number of players but the last one
+        # to connect will determine how many will participate
+        while True:
+            # Wait for a connection
+            print 'Waiting for players'
+            connection, client_address = self.sock.accept()
+            data = ''
+
+            try:
+                print 'Connection from', client_address
+                while True:
+                    msg = connection.recv(16)
+                    if msg:
+                        data += msg
+                    else:
+                        break
+            except:
+                continue
+
+            nplayers, name = data.split(',')
+            nplayers = int(nplayers)
+            if len(self)== 0:
+                print 'Number of players:', nplayers
+            self.append(Player(name, connection))
+
+            if len(self)==nplayers:
+                break
+
     def get_deck(self, game):
         self.deck = Deck(game=game)
         self.discard = Discard()
@@ -37,7 +73,7 @@ class Dealer(list):
         """
         Draw 12 cards to each player and leave one in the discard.
         """
-        nplayers = self.__length__
+        nplayers = self.__length__()
         print 'Drawing cards'
         for i in range(nplayers*12):
             card = self.deck.pop()
