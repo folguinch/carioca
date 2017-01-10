@@ -47,7 +47,10 @@ class Dealer(list):
                 while True:
                     msg = connection.recv(msg_length)
                     data += msg
+                    if len(data)==0:
+                        continue
                     if len(msg)<msg_length:
+                        connection.sendall('1')
                         break
             except:
                 continue
@@ -64,12 +67,12 @@ class Dealer(list):
 
     def sendall(self, msg):
         for player in self:
-            player.socket.sendall(msg)
+            player.send(msg)
 
     def send_exclude(self, exclude, msg):
         for player in self:
             if player.name!=exclude.name:
-                player.socket.sendall(msg)
+                player.send(msg)
 
     def get_deck(self, game):
         self.deck = Deck(game=game)
@@ -91,9 +94,9 @@ class Dealer(list):
         # Send hand to each player
         for player in self:
             dump = json.dumps(player.hand)
-            player.socket.sendall('HAND|'+dump)
+            player.send('HAND|'+dump)
             dump = json.dumps(self.discard[-1])
-            player.socket.sendall('DISCARD|'+dump)
+            player.send('DISCARD|'+dump)
 
 
 
