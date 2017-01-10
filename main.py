@@ -35,14 +35,21 @@ def main_server():
         # Play
         for player in cycle(players):
             # Inform the player it is its turn
-            player.socket.sendall('TURN|1')
+            player.send('TURN|1')
 
             # Inform the other players to wait
             msg = 'Waiting for %s to play' % player.name
-            players.send_exclude(player.name, 'MSG|'+msg)
+            players.send_exclude(player, 'MSG|'+msg)
+            print msg
 
-            print waiting
-
+            # Wait for the player to answer
+            while True:
+                msg = player.receive()
+                flag = players.decode(msg)
+                if flag:
+                    continue
+                else:
+                    break
 
         # Rotate players
         break
