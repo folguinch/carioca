@@ -52,3 +52,12 @@ def init_server(server_name='ganymede', port=10000):
 
     return sock
 
+def interact(msg, *args):
+    while 1:
+        ans = raw_input(msg)
+
+        if ans in args:
+            break
+
+    return ans
+   
