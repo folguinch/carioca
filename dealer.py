@@ -66,6 +66,11 @@ class Dealer(list):
         for player in self:
             player.socket.sendall(msg)
 
+    def send_exclude(self, exclude, msg):
+        for player in self:
+            if player.name!=exclude.name:
+                player.socket.sendall(msg)
+
     def get_deck(self, game):
         self.deck = Deck(game=game)
         self.discard = Discard()
