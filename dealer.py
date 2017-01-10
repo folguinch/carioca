@@ -16,6 +16,10 @@ class Dealer(list):
         self.deck = None
         self.discard = None
 
+    @property
+    def names(self):
+        return [p.name for p in self]
+
     def get_players(self, filename):
         """
         Initialize players from a configuration file.
@@ -52,7 +56,7 @@ class Dealer(list):
             nplayers = int(nplayers)
             if len(self)== 0:
                 print 'Number of players:', nplayers
-            self.sendall('%s has connected' % name)
+            self.sendall('MSG|%s has connected' % name)
             self.append(Player(name, connection))
 
             if len(self)==nplayers:

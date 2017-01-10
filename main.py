@@ -15,8 +15,14 @@ def main_server():
     
     for i,(key,val) in enumerate(ROUNDS.items()):
         # Current round
-        print "Round: %i" % (i+1)
-        print "Objective: %s" % val
+        msg = "Round: %i\nObjective: %s" % (i+1, val)
+        print msg
+        players.sendall('MSG|'+msg)
+
+        # Inform the players about the turns
+        msg = 'Playing order\n'
+        msg += '\n'.join(players.names)
+        players.sendall('MSG|'+msg)
 
         # Create the deck
         print "Creating and shuffling card deck"
@@ -24,6 +30,9 @@ def main_server():
 
         # Draw cards
         players.draw()
+
+        # Play
+        while True:
         break
 
 
