@@ -29,6 +29,7 @@ class Client(BasePlayer):
         # Create a TCP/IP socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         super(Client, self).__init__(name)
+        self.discard = None
 
     def connect(self, host, port):
         print 'Connecting to %s port %s' % (host, port) 
@@ -47,14 +48,16 @@ class Client(BasePlayer):
         return data
 
     def decode(self, msg):
-        if msg.startswith('HAND'):
-            hand = json.loads(','.join(msg.split(',')[1:]))
+        msg_spl = msg.split('|')
+        code = msg_spl[0]
+        if code == 'HAND':
+            hand = json.loads(msg_spl[1])
             self.hand = Hand(*hand)
             print 'Your hand:'
             print self.hand
-        elif msg.startswith('DISCARD'):
-            discard = json.loads(','.join(msg.split(',')[1:]))
-            discard = Card(*discard)
+        elif code == 'DISCARD':
+            discard = json.loads(msg_spl[1])
+            self.discard = Card(*discard)
             print 'Discard:'
             print discard
 
