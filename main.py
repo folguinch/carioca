@@ -1,4 +1,5 @@
 import json
+from itertools import cycle
 
 from .utils import greeting, ROUNDS
 from .player import Client
@@ -20,7 +21,7 @@ def main_server():
         players.sendall('MSG|'+msg)
 
         # Inform the players about the turns
-        msg = 'Playing order\n'
+        msg = 'Playing order:\n'
         msg += '\n'.join(players.names)
         players.sendall('MSG|'+msg)
 
@@ -32,7 +33,18 @@ def main_server():
         players.draw()
 
         # Play
-        while True:
+        for player in cycle(players):
+            # Inform the player it is its turn
+            player.socket.sendall('TURN|1')
+
+            # Inform the other players to wait
+            msg = 'Waiting for %s to play' % player.name
+            players.send_exclude(player.name, 'MSG|'+msg)
+
+            print waiting
+
+
+        # Rotate players
         break
 
 
