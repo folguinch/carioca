@@ -87,9 +87,11 @@ class Client(BasePlayer):
             print self.hand[-1]
             print '[13]'
         elif code=='TURN':
-            self.play()
+            self.play(msg_spl[1])
+            # Check
+            assert len(self.hand)<=12
 
-    def play(self):
+    def play(self, game):
         # Draw a card
         ans = interact('Pick up a card from [t]op of the deck or [d]iscard? ',
             't', 'd')

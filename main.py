@@ -35,7 +35,7 @@ def main_server():
         # Play
         for player in cycle(players):
             # Inform the player it is its turn
-            player.send('TURN|1')
+            player.send('TURN|%s' % key)
 
             # Inform the other players to wait
             msg = 'Waiting for %s to play' % player.name
@@ -45,7 +45,7 @@ def main_server():
             # Wait for the player to answer
             while True:
                 msg = player.receive()
-                flag = players.decode(msg)
+                flag = players.decode(msg, player)
                 if flag:
                     continue
                 else:
