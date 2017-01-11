@@ -20,6 +20,11 @@ class Dealer(list):
     def names(self):
         return [p.name for p in self]
 
+    def index(self, player):
+        for i, p in enumerate(self):
+            if p.name == player.name:
+                return i
+
     def get_players(self, filename):
         """
         Initialize players from a configuration file.
@@ -97,6 +102,25 @@ class Dealer(list):
             player.send('HAND|'+dump)
             dump = json.dumps(self.discard[-1])
             player.send('DISCARD|'+dump)
+
+    def decode(self, msg, player):
+        if len(msg)==0:
+            return True
+
+        code, action = msg.split('|')
+        i = self.index(player)
+        if code=='DRAW':
+            action = int(action)
+            if action==1:
+                card = self.deck.pop()
+                self[i].hand.append(card)
+                card = json.dumps(card)
+                player.send('CARD|'+card)
+            elif action==0:
+                card = self.discard[-1]
+                self.discard = self.discard[:-1]
+                self[i].hand.append(card)
+                player.send('NONE|0')
 
 
 

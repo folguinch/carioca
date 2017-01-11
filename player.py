@@ -66,6 +66,8 @@ class Client(BasePlayer):
         code = msg_spl[0]
         if code=='MSG':
             print msg_spl[1]
+        elif code=='NONE':
+            pass
         elif code=='HAND':
             hand = json.loads(msg_spl[1])
             self.hand = Hand(*hand)
@@ -89,10 +91,12 @@ class Client(BasePlayer):
             't', 'd')
 
         if ans=='d':
+            action = 0
             self.hand.append(self.discard)
         else:
-            self.send('DRAW|1')
-            msg = self.receive()
-            self.decode(msg)
+            action = 1
+        self.send('DRAW|%i' % action)
+        msg = self.receive()
+        self.decode(msg)
         
 
