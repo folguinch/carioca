@@ -144,15 +144,16 @@ class Client(BasePlayer):
             nt = 0
             ns = int(game[0])
 
-        for i in range(nt):
-            cards = interact_size('Lower a three-of-a-kind (coma separated): ', 
-                    3)
-            self.lower(cards)
+        self.lower_cards(nt, 'three-of-a-kind')
+        self.lower_cards(ns, 'straights')
 
-        for i in range(ns):
-            cards = interact_size('Lower a straight (coma separated): ', 
-                    4)
-            self.lower(cards)
+    def lower_cards(self, n, msg):
+        text = 'Lower a %s (coma separated): ' % msg
+        for i in range(n):
+            lowered = False
+            while not lowered:
+                cards = interact_size(text, 3)
+                lowered = self.lower(cards)
 
     def lower(self, cards, to_lower=None):
         msg = json.dumps(cards)
@@ -161,7 +162,7 @@ class Client(BasePlayer):
         if flag is '1':
             return True
         else:
-            return '0'
+            return False
 
 
 
