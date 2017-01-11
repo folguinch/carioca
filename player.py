@@ -73,6 +73,8 @@ class Client(BasePlayer):
             self.hand = Hand(*hand)
             print 'Your hand:'
             print self.hand
+            fmt = '[{:2}]'
+            print '  '.join([fmt.format(i+1) for i in range(len(self.hand))])
         elif code=='DISCARD':
             discard = json.loads(msg_spl[1])
             self.discard = Card(*discard)
@@ -83,20 +85,24 @@ class Client(BasePlayer):
             self.hand.append(Card(*card))
             print 'Your new card:'
             print self.hand[-1]
+            print '[13]'
         elif code=='TURN':
             self.play()
 
     def play(self):
-        ans = interact('Pick up a card from [t]op of the deck or [d]iscard?',
+        # Draw a card
+        ans = interact('Pick up a card from [t]op of the deck or [d]iscard? ',
             't', 'd')
-
         if ans=='d':
             action = 0
             self.hand.append(self.discard)
+            print 'Discard card is [13]'
         else:
             action = 1
         self.send('DRAW|%i' % action)
         msg = self.receive()
         self.decode(msg)
         
-
+        # Lowe hand or drop
+        ans = interact('Would you like to [d]iscard a card or [l]ower your hand? ',
+                'd', 'l')
