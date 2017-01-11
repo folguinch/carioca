@@ -106,3 +106,14 @@ class Client(BasePlayer):
         # Lowe hand or drop
         ans = interact('Would you like to [d]iscard a card or [l]ower your hand? ',
                 'd', 'l')
+        if ans=='l':
+            # Ask for cards to lower
+
+        # Always discard a card at the end
+        ans = interact('What card would you like to discard [1-13]?',
+                *range(1, 14))
+        ans = int(ans)-1
+        self.discard = self.hand.pop(ans)
+        self.send('DISCARD|%i' % ans)
+
+        print 'Your turn has ended'
