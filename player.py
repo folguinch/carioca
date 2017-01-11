@@ -17,9 +17,6 @@ class BasePlayer:
         self.hand = Hand()
         self.down = Down()
 
-    def is_lowered(self):
-        return len(self.down)>0
-
     def send(self, msg):
         assert self.socket is not None
 
@@ -52,6 +49,9 @@ class Player(BasePlayer):
         super(Player, self).__init__(name)
         self.socket = socket
 
+    def is_lowered(self):
+        return len(self.down)>0
+
 class Client(BasePlayer):
 
     def __init__(self, name):
@@ -67,6 +67,7 @@ class Client(BasePlayer):
     def decode(self, msg):
         msg_spl = msg.split('|')
         code = msg_spl[0]
+        fmt = '[{:2}]'
         if code=='MSG':
             print msg_spl[1]
         elif code=='NONE':
@@ -75,20 +76,19 @@ class Client(BasePlayer):
             hand = json.loads(msg_spl[1])
             self.hand = Hand(*hand)
             print 'Your hand:'
-            print self.hand
-            fmt = '[{:2}]'
-            print '  '.join([fmt.format(i+1) for i in range(len(self.hand))])
+            print hand
+            print '  '.join([fmt.format(i+1) for i in range(len(hand))])
         elif code=='DISCARD':
             discard = json.loads(msg_spl[1])
             self.discard = Card(*discard)
             print 'Discard:'
-            print self.discard
+            print discard
         elif code=='CARD':
             card = json.loads(msg_spl[1])
             self.hand.append(Card(*card))
             print 'Your new card:'
             print self.hand[-1]
-            print '[13]'
+            print fmt.format(len(self.hand))
         elif code=='TURN':
             self.play(msg_spl[1])
             # Check
@@ -101,7 +101,7 @@ class Client(BasePlayer):
         if ans=='d':
             action = 0
             self.hand.append(self.discard)
-            print 'Discard card is [13]'
+            print 'Discard card is [{:2}]'.format(len(self.hand))
         else:
             action = 1
         self.send('DRAW|%i' % action)
@@ -120,14 +120,49 @@ class Client(BasePlayer):
                     'd', 'l')
             if ans=='l':
                 # Ask for cards to lower
-                self.lower_hand()
+                self.lower_hand(game)
 
         # Always discard a card at the end
-        ans = interact('What card would you like to discard [1-13]?',
-                *range(1, 14))
+        ans = interact('What card would you like to discard [1-%i]? ' % \
+                len(self.hand), *range(1, len(self.hand)+1))
         ans = int(ans)-1
         self.discard = self.hand.pop(ans)
         self.send('DISCARD|%i' % ans)
 
         print 'Your turn has ended'
+
+    def lower_hand(self, game):
+        
+        # Determine number of three-of-a-kind or straights in the round
+        if 'T' in game and 'S' in game:
+            nt = int(game[0])
+            ns = int(game[2])
+        elif 'T' in game:
+            nt = int(game[0])
+            ns = 0
+        else:
+            nt = 0
+            ns = int(game[0])
+
+        for i in range(nt):
+            cards = interact_size('Lower a three-of-a-kind (coma separated): ', 
+                    3)
+            self.lower(cards)
+
+        for i in range(ns):
+            cards = interact_size('Lower a straight (coma separated): ', 
+                    4)
+            self.lower(cards)
+
+    def lower(self, cards, to_lower=None):
+        msg = json.dumps(cards)
+        self.send('LOWER|'+msg)
+        flag = self.receive()
+        if flag is '1':
+            return True
+        else:
+            return '0'
+
+
+
 
