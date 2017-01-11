@@ -15,7 +15,10 @@ class BasePlayer:
 
     def reset(self):
         self.hand = Hand()
-        self.Down = Down()
+        self.down = Down()
+
+    def is_lowered(self):
+        return len(self.down)>0
 
     def send(self, msg):
         assert self.socket is not None
@@ -105,11 +108,19 @@ class Client(BasePlayer):
         msg = self.receive()
         self.decode(msg)
         
-        # Lowe hand or drop
-        ans = interact('Would you like to [d]iscard a card or [l]ower your hand? ',
-                'd', 'l')
-        if ans=='l':
-            # Ask for cards to lower
+        # Lower hand or drop
+        if self.is_lowered:
+            # Discard or drop cards to lowered cards
+            ans = interact('Would you like to [d]iscard a card or [l]ower cards? ', 
+                    'd', 'l')
+            if ans=='l':
+                self.lower_cards()
+        else:
+            ans = interact('Would you like to [d]iscard a card or [l]ower your hand? ',
+                    'd', 'l')
+            if ans=='l':
+                # Ask for cards to lower
+                self.lower_hand()
 
         # Always discard a card at the end
         ans = interact('What card would you like to discard [1-13]?',
@@ -119,3 +130,4 @@ class Client(BasePlayer):
         self.send('DISCARD|%i' % ans)
 
         print 'Your turn has ended'
+
