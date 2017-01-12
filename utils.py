@@ -58,6 +58,8 @@ def interact(msg, *args):
 
         if ans in args:
             break
+        else:
+            print 'Valid options are: ', args
 
     return ans
    
