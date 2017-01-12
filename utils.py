@@ -61,3 +61,16 @@ def interact(msg, *args):
 
     return ans
    
+def interact_size(msg, size, delimiter=','):
+    while 1:
+        ans = raw_input(msg)
+        try:
+            ans = map(int, msg.split(delimiter))
+        except ValueError:
+            print 'Only numbers are accepted, try again'
+            continue
+        if len(ans)==size:
+            break
+        else:
+            print '%i values must be entered'
+    return ans
