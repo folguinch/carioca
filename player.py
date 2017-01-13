@@ -42,6 +42,12 @@ class BasePlayer:
                 break
         return data
 
+    def lower(self, cards):
+        if len(cards)==3:
+            down = self.hand.lower_three(cards)
+        elif len(cards)==4:
+            down = self.hand.lower_straight(cards)
+
 class Player(BasePlayer):
 
     def __init__(self, name, socket):

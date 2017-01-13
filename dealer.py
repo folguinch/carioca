@@ -121,6 +121,8 @@ class Dealer(list):
                 self.discard = self.discard[:-1]
                 self[i].hand.append(card)
                 player.send('NONE|0')
+        elif code=='LOWER':
+            self[i].lower(action)
 
 
 
