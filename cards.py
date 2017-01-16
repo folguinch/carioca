@@ -20,6 +20,14 @@ class Discard(list):
     pass
 
 class Hand(Cards):
+
+    def compact(self):
+        self = filter(lambda x: x is not None, self)
+
+    def unlower(self, cards, low):
+        for i, card in zip(cards, low):
+            self[i] = card
+
     def lower_three(self, cards):
         low = Down()
         value = None
@@ -46,11 +54,43 @@ class Hand(Cards):
                 break
 
         if len(low)==3:
-            self = filter(lambda x: x is not None, self)
+            self.compact()
             return low
         else:
-            for i, card in zip(cards, low):
-                self[i] = card
+            self.unlower(cards, low)
+            return []
+
+    def lower_straight(self, cards):
+        low = Down()
+        suit = None
+        wildcards = 0
+
+        # Validate suit and wildcards:
+        for i in cards:
+            if self[i].value=='W':
+                wildcards +=1
+                if wildcards > 1:
+                    break
+                else:
+                    low.append(self[i])
+                    self.[i] = None
+                    continue
+            elif suit is None:
+                suit = self[i].suit
+                low.append(self[i])
+                self[i] = None
+            elif self[i].suit == suit:
+                low.append(self[i])
+                self[i] = None
+            else:
+                break
+
+        if len(low)==4:
+            # Sort and check the stright
+            self.compact()
+            return low
+        else:
+            self.unlower(cards, low)
             return []
 
 
