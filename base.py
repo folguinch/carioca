@@ -43,6 +43,12 @@ class Cards(list):
     def __str__(self):
         return '  '.join(map(str,self))
 
+    def sort(self):
+        def keyfn(x):
+            return VALUES.keys().index(x)
+        super(Cards, self).sort(key=keyfn)
+
+
 if __name__=='__main__':
     a = Card('A', 'hearts')
     print a
