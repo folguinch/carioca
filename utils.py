@@ -1,11 +1,13 @@
 import socket
 from itertools import product, repeat, chain
+from collections import OrderedDict
 
 SUITS_UNICODE = {'spades':u'[%s\u2660]', 'hearts':u'[%s\u2665]',
         'diamonds':u'[%s\u2666]', 'clubs':u'[%s\u2663]',
         'red_joker':u'[ \u2606]', 'black_joker':u'[ \u2605]'}
 
-VALUES = dict(zip(range(2,11)+['A','J','Q','K','W'], range(2,11)+[15,10,10,10,30]))
+VALUES = OrderedDict(zip(range(2,11)+['J','Q','K','A','W'], 
+    range(2,11)+[10,10,10,15,30]))
 
 ROUNDS = {'2T':'2 three-of-a-kind', '1T1S':'1 three-of-a-kind & 1 straight',
         '2S':'2 straights', '3T':'3 three-of-a-kind', 
