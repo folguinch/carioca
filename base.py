@@ -44,9 +44,10 @@ class Cards(list):
         return '  '.join(map(str,self))
 
     def sort(self):
-        def keyfn(x):
-            return VALUES.keys().index(x)
-        super(Cards, self).sort(key=keyfn)
+        super(Cards, self).sort(key=sort_cards_key)
+
+    def values(self):
+        return [card.value for card in self]
 
 
 if __name__=='__main__':
