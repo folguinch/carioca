@@ -43,8 +43,11 @@ class Cards(list):
     def __str__(self):
         return '  '.join(map(str,self))
 
-    def sort(self):
-        super(Cards, self).sort(key=sort_cards_key)
+    def sort(self, pattern=None):
+        if pattern is None:
+            super(Cards, self).sort(key=sort_cards_key)
+        else:
+            super(Cards, self).sort(key=lambda x: pattern.index(x))
 
     @property
     def values(self):
