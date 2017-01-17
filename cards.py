@@ -102,11 +102,11 @@ class Hand(Cards):
         if len(set(low.values))==4:
             if wildcard is None and len(seq)==4:
                 self.compact()
-                low.sort()
+                low.sort(pattern=seq)
                 return low
             elif len(seq)==5:
                 aux = low.pop(wildcard)
-                low.sort()
+                low.sort(pattern=seq)
                 if wildcard==0 or wildcard==3:
                     low.insert(wildcard, aux)
                 else:
@@ -119,7 +119,7 @@ class Hand(Cards):
                 aux3 = re.search('[^%s]' % aux2, seq)
                 if aux3 is None:
                     raise Exception('Something is wrong')
-                low.sort()
+                low.sort(pattern=seq)
                 low.insert(aux3.start(), aux1)
                 return low
             else:
