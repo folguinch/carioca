@@ -1,7 +1,7 @@
 import random
 
 from .base import Cards
-from .utils import VALUES, get_deck
+from .utils import get_values_seq, get_deck
 
 class Deck(Cards):
 
@@ -61,44 +61,69 @@ class Hand(Cards):
             return []
 
     def lower_straight(self, cards):
+        assert len(cards) == 4
+
+        # Some deifinitions
         low = Down()
         suit = None
-        wildcards = 0
+        wildcard = None
+        seq = get_values_seq()*2
+        regex0 = '.{3}%s.{3}'
+        regex1 = '.{0,3}%s.{0,3}'
 
         # Validate suit and wildcards:
-        for i in cards:
-            if self[i].value=='W':
-                wildcards +=1
-                if wildcards > 1:
-                    break
-                else:
-                    low.append(self[i])
-                    self.[i] = None
+        for i, n in enumerate(cards):
+            val = str(self[n].value)[0]
+            if val=='W':
+                if wildcard is None:
+                    wildcard = i
+                    low.append(self[n])
+                    self[n] = None
                     continue
+                else:
+                    break
             elif suit is None:
-                suit = self[i].suit
-                low.append(self[i])
-                self[i] = None
-            elif self[i].suit == suit:
-                low.append(self[i])
-                self[i] = None
+                aux = re.search(regex0 % val, seq)
+                seq = aux.group()
+                suit = self[n].suit
+                low.append(self[n])
+                self[n] = None
+            elif self[n].suit == suit:
+                aux = re.search(regex1 % val, seq)
+                if aux is not None:
+                    seq = aux.group()
+                    low.append(self[n])
+                    self[n] = None
+                else:
+                    break
             else:
                 break
 
-        if len(low)==4:
-            # Sort and check the straight
-            low.sort()
-            if wildcard==0:
-                seq = ''.join(map(str, VALUES.keys()[:-1]))*2
-                if ''.join(low.values()) in seq:
-                    pass
+        if len(set(low.values))==4:
+            if wildcard is None and len(seq)==4:
+                self.compact()
+                low.sort()
+                return low
+            elif len(seq)==5:
+                aux = low.pop(wildcard)
+                low.sort()
+                if wildcard==0 or wildcard==3:
+                    low.insert(wildcard, aux)
                 else:
-                    self.unlower(cards, low)
-                    return []
+                    low.insert(0, aux)
+                self.compact()
+                return low
+            elif len(seq)==4:
+                aux1 = low.pop(wildcard)
+                aux2 = ''.join(low.values_as_str())
+                aux3 = re.search('[^%s]' % aux2, seq)
+                if aux3 is None:
+                    raise Exception('Something is wrong')
+                low.sort()
+                low.insert(aux3.start(), aux1)
+                return low
             else:
-
-            self.compact()
-            return low
+                raise Exception('Problems validating straight')
         else:
             self.unlower(cards, low)
             return []
