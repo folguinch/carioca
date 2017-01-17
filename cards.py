@@ -1,7 +1,7 @@
 import random
 
 from .base import Cards
-from .utils import get_deck
+from .utils import VALUES, get_deck
 
 class Deck(Cards):
 
@@ -86,7 +86,17 @@ class Hand(Cards):
                 break
 
         if len(low)==4:
-            # Sort and check the stright
+            # Sort and check the straight
+            low.sort()
+            if wildcard==0:
+                seq = ''.join(map(str, VALUES.keys()[:-1]))*2
+                if ''.join(low.values()) in seq:
+                    pass
+                else:
+                    self.unlower(cards, low)
+                    return []
+            else:
+
             self.compact()
             return low
         else:
