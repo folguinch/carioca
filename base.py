@@ -46,9 +46,12 @@ class Cards(list):
     def sort(self):
         super(Cards, self).sort(key=sort_cards_key)
 
+    @property
     def values(self):
         return [card.value for card in self]
 
+    def values_as_str(self):
+        return map(lambda x: str(x)[0], self.values)
 
 if __name__=='__main__':
     a = Card('A', 'hearts')
