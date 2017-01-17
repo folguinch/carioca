@@ -79,20 +79,10 @@ def interact_size(msg, size, delimiter=','):
             print '%i values must be entered'
     return ans
 
-def check_straight(cards):
-    seq = ''.join(map(str, VALUES.keys()[:-1]))
-    vals = map(str, cards.values())
-    wildcards = 0
-
-    for i, val in enumerate(vals):
-        if val == 'W':
-            wildcards += 1
-        else:
-            j = seq.index()
-
 def sort_cards_key(value):
     return VALUES.keys().index(value)
 
 def get_values_seq():
+    # Joker is not included
     return ''.join(map(lambda x: str(x)[0], VALUES.keys()[:-1]))
 
