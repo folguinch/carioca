@@ -136,3 +136,5 @@ class Hand(Cards):
 class Down(Cards):
     pass
 
+class Table(list):
+    pass
