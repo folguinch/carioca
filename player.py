@@ -82,8 +82,7 @@ class Client(BasePlayer):
             hand = json.loads(msg_spl[1])
             self.hand = Hand(*hand)
             print 'Your hand:'
-            print hand
-            print '  '.join([fmt.format(i+1) for i in range(len(hand))])
+            print self.hand
         elif code=='DISCARD':
             discard = json.loads(msg_spl[1])
             self.discard = Card(*discard)
@@ -110,6 +109,7 @@ class Client(BasePlayer):
             print 'Discard card is [{:2}]'.format(len(self.hand))
         else:
             action = 1
+        # Inform server about the action and decode the server message
         self.send('DRAW|%i' % action)
         msg = self.receive()
         self.decode(msg)
@@ -120,7 +120,7 @@ class Client(BasePlayer):
             ans = interact('Would you like to [d]iscard a card or [l]ower cards? ', 
                     'd', 'l')
             if ans=='l':
-                self.lower_cards()
+                self.drop_cards()
         else:
             ans = interact('Would you like to [d]iscard a card or [l]ower your hand? ',
                     'd', 'l')
@@ -181,6 +181,23 @@ class Client(BasePlayer):
                 print self.hand
 
         return True
+
+    def drop_cards(self):
+        print 'Options are:'
+        print self.table
+        for i, low in enumerate(self.table):
+            ans = interact_size('Which cards would you lower on %i: ' % (i+1), 
+                    0)
+            if ans is None:
+                continue
+            else:
+                for card in ans:
+                    flag = self.table[i].insert(self.hand[card])
+                    if flag:
+                        self.hand[card] = None
+                    else:
+                        print 'Card %i cannot be lowered' % card
+        self.hand.compact()
 
 
     def lower(self, cards, to_lower=None):
