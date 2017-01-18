@@ -145,15 +145,12 @@ class Down(Cards):
         if position is None:
             position = self.validate_card(card)
         else:
-            position = self.validate_position(card.value, position)
-        if self.game=='T':
-            # Check position if it is a wildcard
+            position = self.validate_position(card, position)
+
+        if position is None:
+            return False
+        else:
             self.insert(position, card)
-            return True
-        elif self.game=='S' and card.suit in self.suits:
-            # Check if it goes at the beginning
-            # Check if it goes at the end
-            return True
 
     def validate_card(self, card):
         if card.value=='W' and 'W' not in self.values:
@@ -176,11 +173,13 @@ class Down(Cards):
                 return 0
             elif ba in seq:
                 return len(self)
-            else return None
+            else:
+                return None
         else:
             return None
 
-
+    def validate_position(self, card, position):
+        raise NotImplementedError
 
 class Table(list):
     pass
