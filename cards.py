@@ -21,6 +21,12 @@ class Discard(list):
 
 class Hand(Cards):
 
+    def __str__(self):
+        fmt = '[{:2}]'
+        line1 = '  '.join(map(str,self))
+        line2 = '  '.join([fmt.format(i+1) for i in range(len(self))])
+        return line1 + '\n' + line2
+
     def compact(self):
         self = filter(lambda x: x is not None, self)
 
