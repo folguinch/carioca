@@ -2,7 +2,7 @@ import socket, json
 
 from .cards import Hand, Down
 from .base import Card
-from .utils import interact
+from .utils import interact, interact_size, get_values_seq
 
 __metaclass__ = type
 
@@ -140,7 +140,10 @@ class Client(BasePlayer):
     def lower_hand(self, game):
         
         # Determine number of three-of-a-kind or straights in the round
-        if 'T' in game and 'S' in game:
+        if game == 'RS':
+            nt = 0
+            ns = 0
+        elif 'T' in game and 'S' in game:
             nt = int(game[0])
             ns = int(game[2])
         elif 'T' in game:
@@ -150,8 +153,12 @@ class Client(BasePlayer):
             nt = 0
             ns = int(game[0])
 
-        self.lower_cards(nt, 'three-of-a-kind')
-        self.lower_cards(ns, 'straights')
+        if nt!=0:
+            return self.lower_cards(nt, 'three-of-a-kind')
+        if ns!=0:
+            return self.lower_cards(ns, 'straights')
+        if ns==0 and nt==0:
+            return self.lower_rs()
 
     def lower_cards(self, n, msg):
         text = 'Lower a %s (coma separated): ' % msg
@@ -160,6 +167,21 @@ class Client(BasePlayer):
             while not lowered:
                 cards = interact_size(text, 3)
                 lowered = self.lower(cards)
+
+    def lower_rs(self):
+        print 'Trying to lower a Real straight'
+        self.hand.sort()
+        seq = get_values_seq()
+        for i, card in enumerate(self.hand):
+            if str(card.value)[0] == seq[i]:
+                continue
+            else:
+                print 'Not a Real straight'
+                print 'Your hand:'
+                print self.hand
+
+        return True
+
 
     def lower(self, cards, to_lower=None):
         msg = json.dumps(cards)
