@@ -1,4 +1,4 @@
-import random
+import random, re
 
 from .base import Cards
 from .utils import get_values_seq, get_deck
