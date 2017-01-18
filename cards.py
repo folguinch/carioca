@@ -140,7 +140,47 @@ class Hand(Cards):
     #    super(Hand, self).__init__(*cards)
 
 class Down(Cards):
-    pass
+    
+    def insert_card(self, card, position=None):
+        if position is None:
+            position = self.validate_card(card)
+        else:
+            position = self.validate_position(card.value, position)
+        if self.game=='T':
+            # Check position if it is a wildcard
+            self.insert(position, card)
+            return True
+        elif self.game=='S' and card.suit in self.suits:
+            # Check if it goes at the beginning
+            # Check if it goes at the end
+            return True
+
+    def validate_card(self, card):
+        if card.value=='W' and 'W' not in self.values:
+            return len(self)
+        elif card.value=='W':
+            i = self.values.index('W')
+            if i>4:
+                return 0
+            elif len(self)-i>4:
+                return len(self)
+            else: 
+                return None
+        elif self.game=='T' and card.value in self.values:
+            return len(self)
+        elif self.game=='S' and card.suit in self.suits:
+            seq = get_values_seq()*2
+            ab = str(card.value)[0] + str(self[0].value)[0]
+            ba = str(self[-1].value)[0] + str(card.value)[0]
+            if ab in seq:
+                return 0
+            elif ba in seq:
+                return len(self)
+            else return None
+        else:
+            return None
+
+
 
 class Table(list):
     pass
