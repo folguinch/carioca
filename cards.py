@@ -142,30 +142,43 @@ class Hand(Cards):
 class Down(Cards):
     
     def insert_card(self, card, position=None):
-        if position is None:
-            position = self.validate_card(card)
-        else:
-            position = self.validate_position(card, position)
+        position = self.validate_card(card, position)
 
         if position is None:
             return False
         else:
             self.insert(position, card)
+            return True
 
-    def validate_card(self, card):
+    def validate_card(self, card, position=None):
+        # Validate the position
+        if position is not None:
+            if position==-1:
+                position = len(self)
+            elif position!=0 or position!=len(self):
+                position = len(self)
+        else:
+            position = len(self)
+
+        # Validate card, if position is None card is appended
         if card.value=='W' and 'W' not in self.values:
-            return len(self)
+            return position
         elif card.value=='W':
             i = self.values.index('W')
-            if i>4:
+            if i>4 and len(self)-i>4:
+                # Use the given position only if this condition is satisfy
+                # otherwise the position should be obvious from each condition
+                return position
+            elif i>4:
                 return 0
             elif len(self)-i>4:
                 return len(self)
             else: 
                 return None
         elif self.game=='T' and card.value in self.values:
-            return len(self)
+            return position
         elif self.game=='S' and card.suit in self.suits:
+            # Given position is irrelevant
             seq = get_values_seq()*2
             ab = str(card.value)[0] + str(self[0].value)[0]
             ba = str(self[-1].value)[0] + str(card.value)[0]
@@ -177,9 +190,6 @@ class Down(Cards):
                 return None
         else:
             return None
-
-    def validate_position(self, card, position):
-        raise NotImplementedError
 
 class Table(list):
     pass
