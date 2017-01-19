@@ -70,6 +70,26 @@ class Client(BasePlayer):
         print 'Connecting to %s port %s' % (host, port) 
         self.socket.connect((host, port))
 
+    def print_current(self):
+        self.print_hand()
+        self.print_discard()
+        self.print_table()
+
+    def print_hand(self):
+        print 'Your hand:'
+        print self.hand
+
+    def print_discard(self):
+        print 'Discard:'
+        print self.discard
+    
+    def print_table(self):
+        if table.is_empty():
+            print 'None has lowered'
+        else:
+            print 'Lowered:'
+            print self.table
+
     def decode(self, msg):
         msg_spl = msg.split('|')
         code = msg_spl[0]
@@ -80,23 +100,26 @@ class Client(BasePlayer):
             pass
         elif code=='HAND':
             self.hand.decode(msg_spl[1])
-            print 'Your hand:'
-            print self.hand
+            self.print_hand()
         elif code=='DISCARD':
             self.discard = decode_card(msg_spl[1])
-            print 'Discard:'
-            print self.discard
+            self.print_discard()
         elif code=='CARD':
             self.hand.append(decode_card(msg_spl[1]))
             print 'Your new card:'
             print self.hand[-1]
             print fmt.format(len(self.hand))
         elif code=='TURN':
+            print '-'*80 
+            print "It's your turn!"
             self.play(msg_spl[1])
             # Check
             assert len(self.hand)<=12
 
     def play(self, game):
+        # Print current status
+        self.print_current()
+
         # Draw a card
         ans = interact('Pick up a card from [t]op of the deck or [d]iscard? ',
             't', 'd')
