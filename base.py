@@ -1,4 +1,9 @@
+import json
+
 from .utils import *
+
+def decode_card(load):
+    return Card(*json.loads(load))
 
 class Card(tuple):
 
@@ -35,6 +40,9 @@ class Card(tuple):
     def suit(self):
         return self[1]
 
+    def encode(self):
+        return json.dumps(self)
+
 class Cards(list):
 
     def __init__(self, *args):
@@ -52,6 +60,12 @@ class Cards(list):
     @property
     def values(self):
         return [card.value for card in self]
+
+    def encode(self):
+        return json.dumps(self)
+
+    def decode(self, load):
+        self.__init__(*json.loads(load))
 
     def values_as_str(self):
         return map(lambda x: str(x)[0], self.values)

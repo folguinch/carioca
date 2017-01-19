@@ -1,5 +1,4 @@
 from ConfigParser import ConfigParser
-import json
 
 from .player import Player
 from .cards import *
@@ -98,10 +97,8 @@ class Dealer(list):
 
         # Send hand to each player
         for player in self:
-            dump = json.dumps(player.hand)
-            player.send('HAND|'+dump)
-            dump = json.dumps(self.discard[-1])
-            player.send('DISCARD|'+dump)
+            player.send('HAND|'+player.hand.encode())
+            player.send('DISCARD|'+self.discard[-1].encode())
 
     def decode(self, msg, player):
         if len(msg)==0:
@@ -114,8 +111,7 @@ class Dealer(list):
             if action==1:
                 card = self.deck.pop()
                 self[i].hand.append(card)
-                card = json.dumps(card)
-                player.send('CARD|'+card)
+                player.send('CARD|'+card.encode())
             elif action==0:
                 card = self.discard[-1]
                 self.discard = self.discard[:-1]

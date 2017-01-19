@@ -1,7 +1,7 @@
-import socket, json
+import socket
 
 from .cards import Hand, Down
-from .base import Card
+from .base import decode_card
 from .utils import interact, interact_size, get_values_seq
 
 __metaclass__ = type
@@ -79,18 +79,15 @@ class Client(BasePlayer):
         elif code=='NONE':
             pass
         elif code=='HAND':
-            hand = json.loads(msg_spl[1])
-            self.hand = Hand(*hand)
+            self.hand.decode(msg_spl[1])
             print 'Your hand:'
             print self.hand
         elif code=='DISCARD':
-            discard = json.loads(msg_spl[1])
-            self.discard = Card(*discard)
+            self.discard = decode_card(msg_spl[1])
             print 'Discard:'
-            print discard
+            print self.discard
         elif code=='CARD':
-            card = json.loads(msg_spl[1])
-            self.hand.append(Card(*card))
+            self.hand.append(decode_card(msg_spl[1]))
             print 'Your new card:'
             print self.hand[-1]
             print fmt.format(len(self.hand))
@@ -192,7 +189,7 @@ class Client(BasePlayer):
                 continue
             else:
                 for card in ans:
-                    flag = self.table[i].insert(self.hand[card])
+                    flag = self.table[i].insert_card(self.hand[card])
                     if flag:
                         self.hand[card] = None
                     else:
