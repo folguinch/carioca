@@ -1,8 +1,8 @@
 import socket
 
 from .cards import Hand, Down
-from .base import decode_card
-from .utils import interact, interact_size, get_values_seq
+from .decoder import decode_msg
+from .utils import interact, get_values_seq
 
 __metaclass__ = type
 
@@ -90,6 +90,9 @@ class Client(BasePlayer):
             print 'Lowered:'
             print self.table
 
+    def encode(self):
+        return self.hand.encode() + '|'+ self.table.encode()
+
     def decode(self, msg):
         msg_spl = msg.split('|')
         code = msg_spl[0]
@@ -99,10 +102,10 @@ class Client(BasePlayer):
         elif code=='NONE':
             pass
         elif code=='HAND':
-            self.hand.decode(msg_spl[1])
+            self.hand = decode_msg(msg_spl[1])
             self.print_hand()
         elif code=='DISCARD':
-            self.discard = decode_card(msg_spl[1])
+            self.discard = decode_msg(msg_spl[1])
             self.print_discard()
         elif code=='CARD':
             self.hand.append(decode_card(msg_spl[1]))
@@ -115,6 +118,8 @@ class Client(BasePlayer):
             self.play(msg_spl[1])
             # Check
             assert len(self.hand)<=12
+            print 'Your turn has ended'
+            print '-'*80 
 
     def play(self, game):
         # Print current status
@@ -135,58 +140,68 @@ class Client(BasePlayer):
         self.decode(msg)
         
         # Lower hand or drop
+        win = False
         if self.is_lowered:
             # Discard or drop cards to lowered cards
-            ans = interact('Would you like to [d]iscard a card or [l]ower cards? ', 
-                    'd', 'l')
+            msg = 'Would you like to [d]iscard a card or [l]ower cards? '
+            ans = interact(msg, 'd', 'l')
             if ans=='l':
-                self.drop_cards()
+                win = self.drop_cards()
         else:
-            ans = interact('Would you like to [d]iscard a card or [l]ower your hand? ',
-                    'd', 'l')
+            msg = 'Would you like to [d]iscard a card or [l]ower your hand? '
+            ans = interact(msg, 'd', 'l')
             if ans=='l':
                 # Ask for cards to lower
-                self.lower_hand(game)
+                win = self.lower_hand(game)
 
         # Always discard a card at the end
-        ans = interact('What card would you like to discard [1-%i]? ' % \
-                len(self.hand), *range(1, len(self.hand)+1))
-        ans = int(ans)-1
-        self.discard = self.hand.pop(ans)
-        self.send('DISCARD|%i' % ans)
-
-        print 'Your turn has ended'
+        if not win:
+            ans = interact('What card would you like to discard [1-%i]? ' % \
+                    len(self.hand), *range(1, len(self.hand)+1))
+            ans = int(ans)-1
+            self.discard = self.hand.pop(ans)
+            self.send('DISCARD|%i' % ans)
+            self.send('STATUS|%s' % self.encode())
+        else:
+            self.send('WIN|1')
 
     def lower_hand(self, game):
-        
-        # Determine number of three-of-a-kind or straights in the round
-        if game == 'RS':
-            nt = 0
-            ns = 0
-        elif 'T' in game and 'S' in game:
-            nt = int(game[0])
-            ns = int(game[2])
-        elif 'T' in game:
-            nt = int(game[0])
-            ns = 0
-        else:
-            nt = 0
-            ns = int(game[0])
+        # Copy of the current hand in json format
+        hand = self.hand.encode()
 
-        if nt!=0:
-            return self.lower_cards(nt, 'three-of-a-kind')
-        if ns!=0:
-            return self.lower_cards(ns, 'straights')
-        if ns==0 and nt==0:
-            return self.lower_rs()
+        # Iterate over game
+        for g in range(0, len(game), 2):
+            try:
+                n = int(g[0])
+                t = g[1]
+                lowered = self._lower_hand(n, t)
+                # If fail restore hand and continue game
+                if not lowered:
+                    self.hand.decode(hand)
+                    self.table.reset(self.name)
+                    break
 
-    def lower_cards(self, n, msg):
-        text = 'Lower a %s (coma separated): ' % msg
+            except ValueError:
+                lowered = self.lower_rs()
+                # The player wins
+                return True
+        # The player has not won
+        return False
+
+    def _lower_hand(self, n, game):
+        msg = 'three-of-a-kind' if game=='T' else 'straight'
+        text = 'Lower a %s or [c]ancel (coma separated): ' % msg
         for i in range(n):
             lowered = False
             while not lowered:
-                cards = interact_size(text, 3)
+                cards = interact_size(text, 'c', size=size, dtype=int,
+                        delimeter=',')
+                if cards=='c':
+                    return False
                 lowered = self.lower(cards)
+            print '%i/%i %s lowered' % (i+1, n, msg)
+
+        return True
 
     def lower_rs(self):
         print 'Trying to lower a Real straight'

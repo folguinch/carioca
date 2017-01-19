@@ -1,9 +1,6 @@
-import json
+import cPickle as pickle
 
 from .utils import *
-
-def decode_card(load):
-    return Card(*json.loads(load))
 
 class Card(tuple):
 
@@ -41,7 +38,7 @@ class Card(tuple):
         return self[1]
 
     def encode(self):
-        return json.dumps(self)
+        return pickle.dumps(self)
 
 class Cards(list):
 
@@ -62,10 +59,10 @@ class Cards(list):
         return [card.value for card in self]
 
     def encode(self):
-        return json.dumps(self)
+        return pickle.dumps(self)
 
     def decode(self, load):
-        self.__init__(*json.loads(load))
+        self = pickle.loads(load)
 
     def values_as_str(self):
         return map(lambda x: str(x)[0], self.values)
