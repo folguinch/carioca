@@ -1,4 +1,5 @@
-import random, re
+import random, re, pickle
+from collections import OrderedDict
 
 from .base import Cards
 from .utils import get_values_seq, get_deck
@@ -134,11 +135,6 @@ class Hand(Cards):
             self.unlower(cards, low)
             return []
 
-
-    #def __init__(self, cards, nmax=12):
-    #    self.nmax = nmax
-    #    super(Hand, self).__init__(*cards)
-
 class Down(Cards):
     
     def insert_card(self, card, position=None):
@@ -191,5 +187,21 @@ class Down(Cards):
         else:
             return None
 
-class Table(list):
-    pass
+class Table:
+    def __init__(self, names):
+        self.table = OrderedDict.fromkeys(names)
+
+    def __str__(self):
+        lines = ''
+        fmt = '[%i] %s: %s\n'
+        for i,(name, down) in enumerate(self.table.items()):
+            if down is not None:
+                cards = down
+            else:
+                down = '-----'
+
+            lines += fmt % (i+1, name, cards)
+        return lines.strip()
+
+    def encode(self):
+        return pickle.dumps(self)
