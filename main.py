@@ -69,7 +69,7 @@ def main():
     nplayers = raw_input('Number of players:')
 
     # Connect to server
-    player = Client(player_name, nplayers)
+    player = Client(player_name)
 
     # Connect the socket to the port where the server is listening
     player.connect('ganymede', 10000)

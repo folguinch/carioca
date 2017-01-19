@@ -205,3 +205,11 @@ class Table:
 
     def encode(self):
         return pickle.dumps(self)
+
+    def is_empty(self):
+        aux = True
+        for i in self.table.values():
+            if i is not None:
+                aux = False
+                break
+        return aux

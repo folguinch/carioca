@@ -1,6 +1,6 @@
 import socket
 
-from .cards import Hand, Down
+from .cards import Hand, Down, Table
 from .decoder import decode_msg
 from .utils import interact, get_values_seq
 
@@ -15,7 +15,7 @@ class BasePlayer:
 
     def reset(self):
         self.hand = Hand()
-        self.down = Down()
+        self.table = None
 
     def send(self, msg):
         assert self.socket is not None
@@ -84,7 +84,7 @@ class Client(BasePlayer):
         print self.discard
     
     def print_table(self):
-        if table.is_empty():
+        if self.table.is_empty():
             print 'None has lowered'
         else:
             print 'Lowered:'
@@ -108,10 +108,12 @@ class Client(BasePlayer):
             self.discard = decode_msg(msg_spl[1])
             self.print_discard()
         elif code=='CARD':
-            self.hand.append(decode_card(msg_spl[1]))
+            self.hand.append(decode_msg(msg_spl[1]))
             print 'Your new card:'
             print self.hand[-1]
             print fmt.format(len(self.hand))
+        elif code=='TABLE':
+            self.table = decode_msg(msg_spl[1])
         elif code=='TURN':
             print '-'*80 
             print "It's your turn!"
