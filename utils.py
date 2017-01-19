@@ -54,29 +54,41 @@ def init_server(server_name='ganymede', port=10000):
 
     return sock
 
-def interact(msg, *args):
-    while 1:
-        ans = raw_input(msg)
-
-        if ans in args:
-            break
-        else:
-            print 'Valid options are: ', args
-
-    return ans
+#def interact(msg, *args):
+#    while 1:
+#        ans = raw_input(msg)
+#
+#        if ans in args:
+#            break
+#        else:
+#            print 'Valid options are: ', args
+#
+#    return ans
    
-def interact_size(msg, size, delimiter=','):
+def interact(msg, *options, **kwargs):
     while 1:
         ans = raw_input(msg)
-        try:
-            ans = map(int, msg.split(delimiter))
-        except ValueError:
-            print 'Only numbers are accepted, try again'
-            continue
-        if len(ans)==size:
+        if ans in options:
             break
         else:
-            print '%i values must be entered'
+            try:
+                ans = map(kwargs.get('dtype',str), 
+                        msg.split(kwargs.get('delimiter',' '))
+            except ValueError:
+                print 'Only %s are accepted, try again' % \
+                        kwargs['dtype'].__name__
+                continue
+
+            if 'size' in kwargs:
+                if len(ans)==kwargs['size']:
+                    break
+                else:
+                    print '%i values must be entered' % kwargs['size']
+            elif len(options)==0:
+                break
+            else:
+                'Options are: ', options
+
     return ans
 
 def sort_cards_key(value):
