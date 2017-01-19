@@ -14,6 +14,7 @@ class Dealer(list):
 
         self.deck = None
         self.discard = None
+        self.table = None
 
     @property
     def names(self):
@@ -81,6 +82,9 @@ class Dealer(list):
     def get_deck(self, game):
         self.deck = Deck(game=game)
         self.discard = Discard()
+
+    def reset_table(self, names):
+        self.table = Table(names)
 
     def draw(self):
         """

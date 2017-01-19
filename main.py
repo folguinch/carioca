@@ -25,6 +25,10 @@ def main_server():
         msg += '\n'.join(players.names)
         players.sendall('MSG|'+msg)
 
+        # Initialize the table
+        players.reset_table(players.names)
+        players.sendall('TABLE|'+players.table.encode())
+
         # Create the deck
         print "Creating and shuffling card deck"
         players.get_deck(game=key)
@@ -65,7 +69,7 @@ def main():
     nplayers = raw_input('Number of players:')
 
     # Connect to server
-    player = Client(player_name)
+    player = Client(player_name, nplayers)
 
     # Connect the socket to the port where the server is listening
     player.connect('ganymede', 10000)
