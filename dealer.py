@@ -4,6 +4,7 @@ from operator import attrgetter
 from .player import Client
 from .cards import *
 from .utils import init_server
+from .decoder import decode_msg
 
 class Dealer(list):
 
