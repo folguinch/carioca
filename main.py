@@ -2,7 +2,7 @@ import json
 from itertools import cycle
 
 from .utils import greeting, ROUNDS
-from .player import Client
+from .player import Player
 from .dealer import Dealer
 
 def main_server():
@@ -69,7 +69,7 @@ def main():
     nplayers = raw_input('Number of players:')
 
     # Connect to server
-    player = Client(player_name)
+    player = Player(player_name)
 
     # Connect the socket to the port where the server is listening
     player.connect('ganymede', 10000)
