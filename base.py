@@ -37,6 +37,10 @@ class Card(tuple):
     def suit(self):
         return self[1]
 
+    @property
+    def point(self):
+        return VALUES[self.value]
+
     def encode(self):
         return pickle.dumps(self)
 

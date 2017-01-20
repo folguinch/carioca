@@ -135,6 +135,12 @@ class Hand(Cards):
             self.unlower(cards, low)
             return []
 
+    def get_points(self):
+        points = 0
+        for card in self:
+            points += card.points
+
+
 class Down(Cards):
     
     def insert_card(self, card, position=None):
@@ -194,7 +200,7 @@ class Table:
     def __setitem__(self, key, val):
         self.table[key] = val
 
-    def __getittem__(self, key):
+    def __getitem__(self, key):
         return self.table[key]
 
     def __str__(self):

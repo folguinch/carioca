@@ -66,6 +66,11 @@ class Player(BasePlayer):
         super(Client, self).__init__(name)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.discard = None
+        self.reset()
+
+    def reset(self):
+        self.hand = Hand()
+        self.table = None
 
     def connect(self, host, port):
         print 'Connecting to %s port %s' % (host, port) 
@@ -115,6 +120,10 @@ class Player(BasePlayer):
             print fmt.format(len(self.hand))
         elif code=='TABLE':
             self.table = decode_msg(msg_spl[1])
+        elif code=='POINTS':
+            points = self.hand.get_points()
+            self.points += points
+            self.send('POINTS|%i' % points)
         elif code=='TURN':
             print '-'*80 
             print "It's your turn!"
@@ -153,12 +162,14 @@ class Player(BasePlayer):
             ans = interact(msg, 'd', 'l')
             if ans=='l':
                 win = self.drop_cards()
+                print 'Your cards have been lowered'
         else:
             msg = 'Would you like to [d]iscard a card or [l]ower your hand? '
             ans = interact(msg, 'd', 'l')
             if ans=='l':
                 # Ask for cards to lower
                 win = self.lower_hand(game)
+                print 'Your cards have been lowered'
 
         # Inform the status to the server
         self.send('TABLE|%s' % self.table.encode())

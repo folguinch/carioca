@@ -83,6 +83,13 @@ class Dealer(list):
         self.deck = Deck(game=game)
         self.discard = Discard()
 
+    def update_points(self):
+        for player in self:
+            player.send('POINTS')
+            msg = player.receive()
+            code, points = msg.split('|')
+            player.points += int(points)
+
     def reset_table(self, names):
         self.table = Table(names)
 
@@ -126,10 +133,24 @@ class Dealer(list):
                 self.discard = self.discard[:-1]
                 #self[i].hand.append(card)
                 player.send('NONE|0')
+                newmsg = 'MSG|Player %s picked-up the discard card'
+                self.send_exclude(player, newmsg % player.name)
         #elif code=='LOWER':
         #    self[i].lower(action)
         elif code=='TABLE':
+            was_lowered = self.table[player.name] is not None
             self.table = decode_msg(action)
+            self.sendall('TABLE|'+self.table.encode())
+            is_lowered = self.table[player.name] is not None
+            if was_lowered != is_lowered:
+                newmsg = 'MSG|Player %s has lowered' % player.name
+                self.send_exclude(player, newmsg)
+        elif code=='WIN':
+            newmsg = 'MSG|Player %s has won' % player.name
+            self.sendall(newmsg)
+            # Get the points
+            self.update_points()
+
 
 
 
