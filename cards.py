@@ -191,6 +191,12 @@ class Table:
     def __init__(self, names):
         self.table = OrderedDict.fromkeys(names)
 
+    def __setitem__(self, key, val):
+        self.table[key] = val
+
+    def __getittem__(self, key):
+        return self.table[key]
+
     def __str__(self):
         lines = ''
         fmt = '[%i] %s: %s\n'
