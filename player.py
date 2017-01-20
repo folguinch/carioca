@@ -156,6 +156,9 @@ class Client(BasePlayer):
                 # Ask for cards to lower
                 win = self.lower_hand(game)
 
+        # Inform the status to the server
+        self.send('STATUS|%s' % self.encode())
+
         # Always discard a card at the end
         if not win:
             ans = interact('What card would you like to discard [1-%i]? ' % \
@@ -163,12 +166,11 @@ class Client(BasePlayer):
             ans = int(ans)-1
             self.discard = self.hand.pop(ans)
             self.send('DISCARD|%i' % ans)
-            self.send('STATUS|%s' % self.encode())
         else:
             self.send('WIN|1')
 
     def lower_hand(self, game):
-        # Copy of the current hand in json format
+        # Copy of the current hand in pickle format
         hand = self.hand.encode()
 
         # Iterate over game
@@ -179,11 +181,12 @@ class Client(BasePlayer):
                 lowered = self._lower_hand(n, t)
                 # If fail restore hand and continue game
                 if not lowered:
-                    self.hand.decode(hand)
+                    self.hand = decode_msg(hand)
                     self.table.reset(self.name)
                     break
 
             except ValueError:
+                assert game=='RS'
                 lowered = self.lower_rs()
                 # The player wins
                 return True
@@ -220,21 +223,27 @@ class Client(BasePlayer):
         return True
 
     def drop_cards(self):
-        print 'Options are:'
-        print self.table
-        for i, low in enumerate(self.table):
-            ans = interact_size('Which cards would you lower on %i: ' % (i+1), 
-                    0)
-            if ans is None:
+        for i, player in enumerate(self.table):
+            msg = 'Which cards would you lower on [%i] %s (coma separated): '
+            ans = interact(msg % (i+1, player), '', dtype=int, delimeter=',')
+            if ans=='':
                 continue
             else:
                 for card in ans:
-                    flag = self.table[i].insert_card(self.hand[card])
+                    flag = self.table.insert_card(player, self.hand[card])
                     if flag:
                         self.hand[card] = None
                     else:
                         print 'Card %i cannot be lowered' % card
+                    # If the player won do not continue dropping cards
+                    if len(self.hand)==1:
+                        return True
+
         self.hand.compact()
+        if len(self.hand)==1:
+            return True
+        else:
+            return False
 
 
     def lower(self, cards, to_lower=None):

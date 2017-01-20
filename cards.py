@@ -203,8 +203,21 @@ class Table:
             lines += fmt % (i+1, name, cards)
         return lines.strip()
 
+    def __iter__(self):
+        for key in self.table.keys():
+            if self.table[key] is not None:
+                yield key
+
+    def reset(self, name):
+        self.table[name] = None
+
     def encode(self):
         return pickle.dumps(self)
+
+    def insert_card(self, name, card):
+        assert self.table[name] is not None
+
+        return self.table[name].insert_card(card)
 
     def is_empty(self):
         aux = True
