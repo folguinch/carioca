@@ -246,14 +246,14 @@ class Client(BasePlayer):
             return False
 
 
-    def lower(self, cards, to_lower=None):
-        msg = json.dumps(cards)
-        self.send('LOWER|'+msg)
-        flag = self.receive()
-        if flag is '1':
-            return True
-        else:
-            return False
+    #def lower(self, cards, to_lower=None):
+    #    msg = json.dumps(cards)
+    #    self.send('LOWER|'+msg)
+    #    flag = self.receive()
+    #    if flag is '1':
+    #        return True
+    #    else:
+    #        return False
 
 
 
