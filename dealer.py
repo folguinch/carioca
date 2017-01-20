@@ -1,4 +1,5 @@
 from ConfigParser import ConfigParser
+from operator import attrgetter
 
 from .player import Client
 from .cards import *
@@ -15,6 +16,14 @@ class Dealer(list):
         self.deck = None
         self.discard = None
         self.table = None
+
+    def __str__(self):
+        table = sorted(self, key=attrgetter('points','name'), reverse=True)
+        fmt = '[%i] %s\t\t%i\n'
+        line = ''
+        for i,p in enumerate(table):
+            line += fmt % (i+1, p.name, p.points)
+        return line.strip()
 
     @property
     def names(self):
@@ -89,6 +98,9 @@ class Dealer(list):
             msg = player.receive()
             code, points = msg.split('|')
             player.points += int(points)
+        
+        self.sendall('MSG|%s' % self)
+
 
     def reset_table(self, names):
         self.table = Table(names)
@@ -135,6 +147,7 @@ class Dealer(list):
                 player.send('NONE|0')
                 newmsg = 'MSG|Player %s picked-up the discard card'
                 self.send_exclude(player, newmsg % player.name)
+            return True
         #elif code=='LOWER':
         #    self[i].lower(action)
         elif code=='TABLE':
@@ -145,11 +158,18 @@ class Dealer(list):
             if was_lowered != is_lowered:
                 newmsg = 'MSG|Player %s has lowered' % player.name
                 self.send_exclude(player, newmsg)
+            return True
+        elif code=='DISCARD':
+            self.discard.append(decode_msg(action))
+            self.sendall('DISCARD|'+self.discard[-1].encode())
         elif code=='WIN':
             newmsg = 'MSG|Player %s has won' % player.name
             self.sendall(newmsg)
             # Get the points
             self.update_points()
+            return -1
+        elif code=='FINISH':
+            return False
 
 
 
