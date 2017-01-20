@@ -11,11 +11,12 @@ class BasePlayer:
     def __init__(self, name):
         self.name = name
         self.socket = None
-        self.reset()
+        self.points = 0
+    #    self.reset()
 
-    def reset(self):
-        self.hand = Hand()
-        self.table = None
+    #def reset(self):
+    #    self.hand = Hand()
+    #    self.table = None
 
     def send(self, msg):
         assert self.socket is not None
@@ -42,23 +43,23 @@ class BasePlayer:
                 break
         return data
 
-    def lower(self, cards):
-        if len(cards)==3:
-            down = self.hand.lower_three(cards)
-        elif len(cards)==4:
-            down = self.hand.lower_straight(cards)
+    #def lower(self, cards):
+    #    if len(cards)==3:
+    #        down = self.hand.lower_three(cards)
+    #    elif len(cards)==4:
+    #        down = self.hand.lower_straight(cards)
 
-class Player(BasePlayer):
+class Client(BasePlayer):
 
     def __init__(self, name, socket):
         print 'New player:', name 
         super(Player, self).__init__(name)
         self.socket = socket
 
-    def is_lowered(self):
-        return len(self.down)>0
+    #def is_lowered(self):
+    #    return len(self.down)>0
 
-class Client(BasePlayer):
+class Player(BasePlayer):
 
     def __init__(self, name):
         # Create a TCP/IP socket
@@ -123,6 +124,9 @@ class Client(BasePlayer):
             print 'Your turn has ended'
             print '-'*80 
 
+    def is_lowered(self):
+        return self.table[self.name] is not None
+
     def play(self, game):
         # Print current status
         self.print_current()
@@ -143,7 +147,7 @@ class Client(BasePlayer):
         
         # Lower hand or drop
         win = False
-        if self.is_lowered:
+        if self.is_lowered():
             # Discard or drop cards to lowered cards
             msg = 'Would you like to [d]iscard a card or [l]ower cards? '
             ans = interact(msg, 'd', 'l')
@@ -157,7 +161,7 @@ class Client(BasePlayer):
                 win = self.lower_hand(game)
 
         # Inform the status to the server
-        self.send('STATUS|%s' % self.encode())
+        self.send('TABLE|%s' % self.table.encode())
 
         # Always discard a card at the end
         if not win:
@@ -245,6 +249,11 @@ class Client(BasePlayer):
         else:
             return False
 
+    def lower(self, cards):
+        if len(cards)==3:
+            down = self.hand.lower_three(cards)
+        elif len(cards)==4:
+            down = self.hand.lower_straight(cards)
 
     #def lower(self, cards, to_lower=None):
     #    msg = json.dumps(cards)
