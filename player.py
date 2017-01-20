@@ -53,7 +53,7 @@ class Client(BasePlayer):
 
     def __init__(self, name, socket):
         print 'New player:', name 
-        super(Player, self).__init__(name)
+        super(Client, self).__init__(name)
         self.socket = socket
 
     #def is_lowered(self):
@@ -63,7 +63,7 @@ class Player(BasePlayer):
 
     def __init__(self, name):
         # Create a TCP/IP socket
-        super(Client, self).__init__(name)
+        super(Player, self).__init__(name)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.discard = None
         self.reset()
