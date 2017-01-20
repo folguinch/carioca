@@ -1,6 +1,6 @@
 from ConfigParser import ConfigParser
 
-from .player import Player
+from .player import Client
 from .cards import *
 from .utils import init_server
 
@@ -34,7 +34,7 @@ class Dealer(list):
         print 'Players:'
         for name in config.sections():
             print '\t%s' % name
-            self.append(Player(name, config.get(name,'ip')))
+            self.append(Client(name, config.get(name,'ip')))
 
     def connect_players(self, msg_length=2048):
 
@@ -65,7 +65,7 @@ class Dealer(list):
             if len(self)== 0:
                 print 'Number of players:', nplayers
             self.sendall('MSG|%s has connected' % name)
-            self.append(Player(name, connection))
+            self.append(Client(name, connection))
 
             if len(self)==nplayers:
                 break
@@ -92,16 +92,21 @@ class Dealer(list):
         """
         nplayers = len(self)
         print 'Drawing cards'
+        hands = []
         for i in range(nplayers*12):
             card = self.deck.pop()
-            self[i % nplayers].hand.append(card)
+            try:
+                hands[i % nplayers].append(card)
+            except IndexError:
+                hands.append(Hand())
+                hands[i % nplayers].append(card)
 
         # Leave one card in the discard
         self.discard.append(self.deck.pop())
 
         # Send hand to each player
-        for player in self:
-            player.send('HAND|'+player.hand.encode())
+        for i,player in enumerate(self):
+            player.send('HAND|'+hands[i].encode())
             player.send('DISCARD|'+self.discard[-1].encode())
 
     def decode(self, msg, player):
@@ -114,15 +119,17 @@ class Dealer(list):
             action = int(action)
             if action==1:
                 card = self.deck.pop()
-                self[i].hand.append(card)
+                #self[i].hand.append(card)
                 player.send('CARD|'+card.encode())
             elif action==0:
                 card = self.discard[-1]
                 self.discard = self.discard[:-1]
-                self[i].hand.append(card)
+                #self[i].hand.append(card)
                 player.send('NONE|0')
-        elif code=='LOWER':
-            self[i].lower(action)
+        #elif code=='LOWER':
+        #    self[i].lower(action)
+        elif code=='TABLE':
+            self.table = decode_msg(action)
 
 
 
