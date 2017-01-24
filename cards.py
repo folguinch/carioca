@@ -210,7 +210,7 @@ class Table:
             if down is not None:
                 cards = down
             else:
-                down = '-----'
+                cards = '-----'
 
             lines += fmt % (i+1, name, cards)
         return lines.strip()
