@@ -177,11 +177,13 @@ class Player(BasePlayer):
         # Always discard a card at the end
         if not win:
             ans = interact('What card would you like to discard [1-%i]? ' % \
-                    len(self.hand), *range(1, len(self.hand)+1))
+                    len(self.hand), *map(str,range(1, len(self.hand)+1)))
             ans = int(ans)-1
             self.discard = self.hand.pop(ans)
             self.send('DISCARD|%i' % ans)
+            self.send('FINISH|1')
         else:
+            discard = self.hand.pop()
             self.send('WIN|1')
 
     def lower_hand(self, game):
