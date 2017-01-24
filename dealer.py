@@ -154,15 +154,17 @@ class Dealer(list):
         elif code=='TABLE':
             was_lowered = self.table[player.name] is not None
             self.table = decode_msg(action)
-            self.sendall('TABLE|'+self.table.encode())
+            self.send_exclude(player, 'TABLE|'+self.table.encode())
             is_lowered = self.table[player.name] is not None
             if was_lowered != is_lowered:
                 newmsg = 'MSG|Player %s has lowered' % player.name
                 self.send_exclude(player, newmsg)
             return True
         elif code=='DISCARD':
+            print action
             self.discard.append(decode_msg(action))
-            self.sendall('DISCARD|'+self.discard[-1].encode())
+            self.send_exclude(player, 'DISCARD|'+self.discard[-1].encode())
+            return True
         elif code=='WIN':
             newmsg = 'MSG|Player %s has won' % player.name
             self.sendall(newmsg)
