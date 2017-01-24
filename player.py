@@ -180,7 +180,7 @@ class Player(BasePlayer):
                     len(self.hand), *map(str,range(1, len(self.hand)+1)))
             ans = int(ans)-1
             self.discard = self.hand.pop(ans)
-            self.send('DISCARD|%i' % ans)
+            self.send('DISCARD|%s' % self.discard.encode())
             self.send('FINISH|1')
         else:
             discard = self.hand.pop()
