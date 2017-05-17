@@ -42,21 +42,21 @@ class Hand(Cards):
 
         # Validate and lower
         for i in cards:
-            if self[i].value=='W':
+            if self[i-1].value=='W':
                 wildcards += 1
                 if wildcards > 1:
                     break
                 else:
-                    low.append(self[i])
-                    self[i] = None
+                    low.append(self[i-1])
+                    self[i-1] = None
                     continue
             elif value is None:
-                value = self[i].value
-                low.append(self[i])
-                self[i] = None
-            elif self[i].value == value:
-                low.append(self[i])
-                self[i] = None
+                value = self[i-1].value
+                low.append(self[i-1])
+                self[i-1] = None
+            elif self[i-1].value == value:
+                low.append(self[i-1])
+                self[i-1] = None
             else:
                 break
 
