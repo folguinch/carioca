@@ -213,7 +213,7 @@ class Table:
                 for j,d in enumerate(down):
                     cards += fmt2 % (j+1, d)
             else:
-                cards = '-----'
+                cards = '\t-----'
 
             lines += fmt % (i+1, name, cards)
         return lines.strip()
