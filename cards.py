@@ -205,10 +205,13 @@ class Table:
 
     def __str__(self):
         lines = ''
-        fmt = '[%i] %s: %s\n'
+        fmt = '[%i] %s: \n%s'
         for i,(name, down) in enumerate(self.table.items()):
             if down is not None:
-                cards = down
+                fmt2 = '\t[%i] %s\n'
+                cards = ''
+                for j,d in enumerate(down):
+                    cards += fmt2 % (j+1, d)
             else:
                 cards = '-----'
 
@@ -225,6 +228,11 @@ class Table:
 
     def encode(self):
         return pickle.dumps(self)
+
+    def append(self, key, value):
+        if self.table[key] is None:
+            self.table[key] = []
+        self.table[key] += [value]
 
     def insert_card(self, name, card):
         assert self.table[name] is not None
