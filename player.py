@@ -226,7 +226,8 @@ class Player(BasePlayer):
                 if cards=='c':
                     return False
                 lowered = self.lower(cards)
-                print lowered
+                if not lowered:
+                    print 'This is not a %s' % msg
             print '%i/%i %s lowered' % (i+1, n, msg)
             print self.table
             print 'Your hand:'
@@ -251,7 +252,8 @@ class Player(BasePlayer):
     def drop_cards(self):
         for i, player in enumerate(self.table):
             msg = 'Which cards would you lower on [%i] %s (coma separated): '
-            ans = interact(msg % (i+1, player), '', dtype=int, delimiter=',')
+            ans = interact(msg % (i+1, player), '', dtype=int, delimiter=',',
+                    size='*')
             if ans=='':
                 continue
             else:
@@ -277,9 +279,11 @@ class Player(BasePlayer):
         elif len(cards)==4:
             down = self.hand.lower_straight(cards)
 
-        self.table.append(self.name, Down(*down))
-
-        return down
+        if len(down)==0:
+            return False
+        else:
+            self.table.append(self.name, down)
+            return True
 
     #def lower(self, cards, to_lower=None):
     #    msg = json.dumps(cards)
