@@ -193,8 +193,8 @@ class Player(BasePlayer):
         # Iterate over game
         for g in range(0, len(game), 2):
             try:
-                n = int(g[0])
-                t = g[1]
+                n = int(game[g])
+                t = game[g+1]
                 lowered = self._lower_hand(n, t)
                 # If fail restore hand and continue game
                 if not lowered:
@@ -211,17 +211,26 @@ class Player(BasePlayer):
         return False
 
     def _lower_hand(self, n, game):
-        msg = 'three-of-a-kind' if game=='T' else 'straight'
+        if game=='T':
+            msg = 'three-of-a-kind' 
+            size = 3
+        else:
+            mag = 'straight'
+            size = 4
         text = 'Lower a %s or [c]ancel (coma separated): ' % msg
         for i in range(n):
             lowered = False
             while not lowered:
-                cards = interact_size(text, 'c', size=size, dtype=int,
-                        delimeter=',')
+                cards = interact(text, 'c', size=size, dtype=int,
+                        delimiter=',')
                 if cards=='c':
                     return False
                 lowered = self.lower(cards)
+                print lowered
             print '%i/%i %s lowered' % (i+1, n, msg)
+            print self.table
+            print 'Your hand:'
+            print self.hand
 
         return True
 
@@ -242,7 +251,7 @@ class Player(BasePlayer):
     def drop_cards(self):
         for i, player in enumerate(self.table):
             msg = 'Which cards would you lower on [%i] %s (coma separated): '
-            ans = interact(msg % (i+1, player), '', dtype=int, delimeter=',')
+            ans = interact(msg % (i+1, player), '', dtype=int, delimiter=',')
             if ans=='':
                 continue
             else:
@@ -267,6 +276,10 @@ class Player(BasePlayer):
             down = self.hand.lower_three(cards)
         elif len(cards)==4:
             down = self.hand.lower_straight(cards)
+
+        self.table.append(self.name, Down(*down))
+
+        return down
 
     #def lower(self, cards, to_lower=None):
     #    msg = json.dumps(cards)
