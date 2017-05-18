@@ -33,7 +33,7 @@ class Hand(Cards):
 
     def unlower(self, cards, low):
         for i, card in zip(cards, low):
-            self[i] = card
+            self[i-1] = card
 
     def lower_three(self, cards):
         low = Down()
