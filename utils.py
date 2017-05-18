@@ -80,14 +80,16 @@ def interact(msg, *options, **kwargs):
                 continue
 
             if 'size' in kwargs:
-                if len(ans)==kwargs['size']:
+                if kwargs['size']=='*':
+                    break
+                elif len(ans)==kwargs['size']:
                     break
                 else:
                     print '%i values must be entered' % kwargs['size']
             elif len(options)==0:
                 break
             else:
-                'Options are: ', options
+                print 'Options are: ', options
 
     return ans
 
