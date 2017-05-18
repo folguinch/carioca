@@ -73,7 +73,7 @@ def interact(msg, *options, **kwargs):
         else:
             try:
                 ans = map(kwargs.get('dtype',str), 
-                        msg.split(kwargs.get('delimiter',' '))
+                        ans.split(kwargs.get('delimiter',' ')))
             except ValueError:
                 print 'Only %s are accepted, try again' % \
                         kwargs['dtype'].__name__
