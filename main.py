@@ -50,10 +50,17 @@ def main_server():
             while True:
                 msg = player.receive()
                 flag = players.decode(msg, player)
-                if flag:
-                    continue
-                else:
+                if flag==-1:
                     break
+                elif flag:
+                    continue
+                elif not flag:
+                    break
+                else:
+                    raise ValueError('Flag not recognised')
+
+            if flag==-1:
+                break
 
         # Rotate players
         break
