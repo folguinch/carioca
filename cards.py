@@ -29,7 +29,7 @@ class Hand(Cards):
         return line1 + '\n' + line2
 
     def compact(self):
-        self = filter(lambda x: x is not None, self)
+        super(Hand, self).__init__(*filter(lambda x: x is not None, self))
 
     def unlower(self, cards, low):
         for i, card in zip(cards, low):
